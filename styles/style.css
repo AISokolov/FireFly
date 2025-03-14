@@ -48,10 +48,10 @@ QLineEdit:hover{
     border: 1px solid #81A1C1; /* Light blue border on hover for input fields */
 }
 QMenu{
-    background-color: #4C566A; /* Dark gray background for input fields */
+    background-color: #465a7c; /* Dark gray background for input fields */
     color: #D8DEE9; /* Light text color for input fields */
     border: 1px solid #434C5E; /* Slightly darker border for input fields */
-    border-radius: 5px; /* Rounded corners for input fields */
+    border-radius: 3px; /* Rounded corners for input fields */
     padding: 5px;
 }
 

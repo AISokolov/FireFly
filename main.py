@@ -12,13 +12,26 @@ cache_path = os.path.join(os.getcwd(), "firefly_cache")
 os.makedirs(storage_path, exist_ok=True)
 os.makedirs(cache_path, exist_ok=True)
 
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller creates a temp folder and stores the resources there
+        base_path = sys._MEIPASS
+    else:
+        # Use the current directory in development mode
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
 if __name__ == "__main__":
+    # Create the Qt application
     app = QApplication(sys.argv)
 
     # Load and apply the stylesheet
-    stylesheet = load_stylesheet("styles/style.css")
+    stylesheet_path = resource_path("styles/style.css")
+    stylesheet = load_stylesheet(stylesheet_path)
     if stylesheet:
         app.setStyleSheet(stylesheet)
+    else:
+        print(f"Failed to load stylesheet from: {stylesheet_path}")
 
     # Create and show the main window
     window = ChatGPTApp(storage_path, cache_path)

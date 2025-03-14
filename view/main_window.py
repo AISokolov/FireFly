@@ -1,8 +1,8 @@
 import os
 import json
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import (
-    QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QStackedWidget, QMenu
+    QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QStackedWidget, QMenu, QSystemTrayIcon, QApplication
 )
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebEngineCore import QWebEngineProfile, QWebEnginePage
@@ -22,7 +22,7 @@ class ChatGPTApp(QMainWindow):
         x = (screen_geometry.width() - dialog_geometry.width()) // 2
         y = (screen_geometry.height() - dialog_geometry.height()) // 2
         self.setGeometry(x, y, 800, 600)
-        self.setWindowIcon(QIcon("icons/appIcon.png"))
+        self.setWindowIcon(QIcon("icons/appIcon.ico"))
 
         # Store the storage path for saving view data
         self.storage_path = storage_path
@@ -79,8 +79,30 @@ class ChatGPTApp(QMainWindow):
         # Load saved views from the cache
         self.load_views()
 
+        # Set up the system tray icon
+        self.tray_icon = QSystemTrayIcon(QIcon("icons/appIcon.ico"), self)
+        tray_menu = QMenu(self)
+        restore_action = QAction("Restore", self)
+        restore_action.triggered.connect(self.show)
+        tray_menu.addAction(restore_action)
+        quit_action = QAction("Quit", self)
+        quit_action.triggered.connect(QApplication.instance().quit)
+        tray_menu.addAction(quit_action)
+        self.tray_icon.setContextMenu(tray_menu)
+        self.tray_icon.show()
+
+    def closeEvent(self, event):
+        """Override closeEvent to minimize to tray instead of closing."""
+        event.ignore()
+        self.hide()
+        self.tray_icon.showMessage(
+            "Firefly",
+            "The application is still running. Click the tray icon to restore.",
+            QSystemTrayIcon.Information,
+            2000
+        )
+
     def create_web_view(self, url):
-        """Create a QWebEngineView with the given URL."""
         web_view = QWebEngineView()
         web_view.setPage(QWebEnginePage(self.profile, web_view))
         web_view.setUrl(url)
