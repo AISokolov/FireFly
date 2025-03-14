@@ -1,0 +1,58 @@
+/* style.css */
+
+/* General window background */
+QWidget {
+    background-color: #181a21; /* Dark background */
+    color: #D8DEE9; /* Light text color */
+    font-family: "Segoe UI";
+    font-size: 14px;
+}
+
+/* Button styles */
+QPushButton {
+    background-color: #4C566A; /* Dark gray background */
+    color: #D8DEE9; /* Light text color */
+    border: 1px solid #434C5E; /* Slightly darker border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+QPushButton:hover {
+    background-color: #5E81AC; /* Light blue background on hover */
+    border: 1px solid #81A1C1; /* Light blue border on hover */
+}
+
+QPushButton:pressed {
+    background-color: #81A1C1; /* Light blue background when pressed */
+    border: 1px solid #5E81AC; /* Darker blue border when pressed */
+}
+
+/* WebEngineView styles */
+QWebEngineView {
+    background-color: #3B4252; /* Slightly lighter background for the web view */
+    border: 1px solid #434C5E; /* Border around the web view */
+}
+
+QLineEdit {
+    background-color: #4C566A; /* Dark gray background for input fields */
+    color: #D8DEE9; /* Light text color for input fields */
+    border: 1px solid #434C5E; /* Slightly darker border for input fields */
+    border-radius: 5px; /* Rounded corners for input fields */
+    padding: 5px;
+}
+
+QLineEdit:hover{
+    background-color: #33475e; /* Light blue background on hover for input fields */
+    border: 1px solid #81A1C1; /* Light blue border on hover for input fields */
+}
+QMenu{
+    background-color: #4C566A; /* Dark gray background for input fields */
+    color: #D8DEE9; /* Light text color for input fields */
+    border: 1px solid #434C5E; /* Slightly darker border for input fields */
+    border-radius: 5px; /* Rounded corners for input fields */
+    padding: 5px;
+}
+
+
