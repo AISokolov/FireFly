@@ -7,5 +7,7 @@ def load_stylesheet(filename):
         stream = QTextStream(file)
         stylesheet = stream.readAll()
         file.close()
+        print(f"Stylesheet loaded successfully from: {filename}")  # Debugging
         return stylesheet
+    print(f"Failed to open stylesheet file: {filename}")  # Debugging
     return ""

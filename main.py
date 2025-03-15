@@ -1,5 +1,7 @@
 import sys
 import os
+
+from PySide6 import QtGui
 from PySide6.QtWidgets import QApplication
 from view.main_window import ChatGPTApp
 from util.stylesheet import load_stylesheet
@@ -11,6 +13,15 @@ cache_path = os.path.join(os.getcwd(), "firefly_cache")
 # Ensure the directories exist
 os.makedirs(storage_path, exist_ok=True)
 os.makedirs(cache_path, exist_ok=True)
+
+basedir = os.path.dirname(__file__)
+
+try:
+    from ctypes import windll  # Only exists on Windows.
+    myappid = 'mycompany.myproduct.subproduct.version'
+    windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+except ImportError:
+    pass
 
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
@@ -26,12 +37,14 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     # Load and apply the stylesheet
-    stylesheet_path = resource_path("styles/style.css")
+    stylesheet_path = resource_path("styles/style.qss")
     stylesheet = load_stylesheet(stylesheet_path)
     if stylesheet:
         app.setStyleSheet(stylesheet)
     else:
         print(f"Failed to load stylesheet from: {stylesheet_path}")
+
+    app.setWindowIcon(QtGui.QIcon(os.path.join(basedir, 'icons/appIcon.ico')))
 
     # Create and show the main window
     window = ChatGPTApp(storage_path, cache_path)
