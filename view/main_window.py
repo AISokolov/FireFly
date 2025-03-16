@@ -62,6 +62,7 @@ class ChatGPTApp(QMainWindow):
         self.button_layout = QVBoxLayout()
         # Add the '+' button to the left side
         self.button_add = QPushButton("+", self)
+        self.button_add.setObjectName("plusButton")
         self.button_add.clicked.connect(self.open_add_view_dialog)
         self.button_add.setFixedSize(40, 40)
         self.button_layout.setContentsMargins(0, 20, 0, 0)

@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QFileDialog
 
 class AddViewDialog(QDialog):
@@ -9,8 +10,6 @@ class AddViewDialog(QDialog):
 
         x = (screen_geometry.width() - dialog_geometry.width()) // 2
         y = (screen_geometry.height() - dialog_geometry.height()) // 2
-
-
         self.setGeometry(x, y, 300, 200)
 
         layout = QVBoxLayout(self)
@@ -31,6 +30,10 @@ class AddViewDialog(QDialog):
         layout.addWidget(self.icon_label)
         layout.addWidget(self.icon_button)
 
+        self.download_icon_button = QPushButton("Find more icons here", self)
+        self.download_icon_button.clicked.connect(self.download_icon)
+        layout.addWidget(self.download_icon_button)
+
         self.add_button = QPushButton("Add", self)
         self.add_button.clicked.connect(self.accept)
         layout.addWidget(self.add_button)
@@ -42,3 +45,7 @@ class AddViewDialog(QDialog):
 
     def get_data(self):
         return self.name_input.text(), self.url_input.text(), self.icon_path
+
+    def download_icon(self):
+        import webbrowser
+        webbrowser.open("https://seeklogo.com/")
