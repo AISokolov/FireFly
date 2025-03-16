@@ -1,4 +1,3 @@
-```markdown
 # FireFlyApp
 
 This is a simple PySide6 application that allows you to manage multiple web views with a custom UI.
