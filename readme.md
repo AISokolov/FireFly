@@ -1,4 +1,4 @@
-
+```markdown
 # FireFlyApp
 
 This is a simple PySide6 application that allows you to manage multiple web views with a custom UI.
@@ -20,8 +20,8 @@ This is a simple PySide6 application that allows you to manage multiple web view
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/AISokolov/ChatGPTApp.git
-    cd ChatGPTApp
+    git clone https://github.com/AISokolov/FireFlyApp.git
+    cd FireFlyApp
     ```
 
 2. Install the required packages:
@@ -48,3 +48,4 @@ This will create a single executable file in the `dist` directory.
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
+```
