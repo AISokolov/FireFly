@@ -8,8 +8,6 @@ QWidget {
     font-size: 14px;
     border-radius: 15px;  /* Rounded corners */
 }
-
-/* WebEngineView styles */
 /* Button styles */
 QPushButton {
     background-color: #4C566A; /* Dark gray background */
@@ -21,14 +19,14 @@ QPushButton {
     min-height: 40px;
 }
 
+
 QPushButton:hover {
     background-color: #5E81AC; /* Light blue background on hover */
     border: 1px solid #81A1C1; /* Light blue border on hover */
 }
 
-QPushButton:pressed {
-    background-color: #81A1C1; /* Light blue background when pressed */
-    border: 1px solid #5E81AC; /* Darker blue border when pressed */
+QPushButton:checked {
+    background-color: black;
 }
 
 QLineEdit {
@@ -70,3 +68,31 @@ QMenu{
 #minimizeButton:hover, #maximizeButton:hover {
     background-color: rgba(70, 70, 70, 200);  /* Slightly lighter on hover */
 }
+
+QStackedWidget::item{
+    border-radius: 10px;
+}
+
+QStackedWidget::item:selected{
+    background-color: #4C566A;
+}
+
+#plusButton{
+    background-color: #2a818f; /* Dark gray background */
+    color: #D8DEE9; /* Light text color */
+    border: 1px solid #434C5E; /* Slightly darker border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px;
+    min-width: 40px;
+    min-height: 40px;
+}
+
+#plusButton:hover{
+    background-color: #143d43; /* Dark gray background */
+    color: #D8DEE9; /* Light text color */
+    border: 1px solid #434C5E; /* Slightly darker border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px;
+    min-width: 40px;
+    min-height: 40px;}
+
