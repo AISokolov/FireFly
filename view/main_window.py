@@ -4,18 +4,19 @@ import json
 from PySide6.QtGui import QIcon, QAction, QDesktopServices
 from PySide6.QtWidgets import (
     QMainWindow, QPushButton, QVBoxLayout, QWidget, QHBoxLayout, QStackedWidget, QMenu, QSystemTrayIcon, QApplication,
-    QMessageBox
+    QMessageBox, QScrollArea
 )
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWebEngineCore import QWebEngineProfile, QWebEnginePage
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QEvent, QPoint
 
 from view import web_view
 from view.add_view_dialog import AddViewDialog
+from view.settings_dialog import SettingsDialog
 
 
-class ChatGPTApp(QMainWindow):
+class FireFlyApp(QMainWindow):
     def __init__(self, storage_path, cache_path):
         super().__init__()
 
@@ -25,9 +26,6 @@ class ChatGPTApp(QMainWindow):
         x = (screen_geometry.width() - dialog_geometry.width()) // 2
         y = (screen_geometry.height() - dialog_geometry.height()) // 2
         self.setGeometry(x, y, 800, 600)
-        self.setWindowTitle("")
-
-
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
 
@@ -44,37 +42,49 @@ class ChatGPTApp(QMainWindow):
         # Create a horizontal layout for the entire window
         main_layout = QHBoxLayout(central_widget)
 
-        #control buttons
-        self.minimize_button = QPushButton("─", self)  # Use a smaller symbol
+        self.minimize_button = QPushButton("─", self)
         self.minimize_button.setObjectName("minimizeButton")
-        self.minimize_button.setFixedSize(1, 1)  # Same size as other buttons
+        self.minimize_button.setFixedSize(1, 1)
         self.minimize_button.clicked.connect(self.showMinimized)
 
-        # Fullscreen button
-        self.fullscreen_button = QPushButton("□", self)  # Use a smaller symbol
-        self.fullscreen_button.setObjectName("maximizeButton")
-        self.fullscreen_button.setFixedSize(1, 1)  # Same size as other buttons
-        self.fullscreen_button.clicked.connect(self.toggle_fullscreen)
+        # Maximize button
+        self.maximizeButton = QPushButton("□", self)
+        self.maximizeButton.setObjectName("maximizeButton")
+        self.maximizeButton.setFixedSize(1, 1)
+        self.maximizeButton.move(30, 0)
+        self.maximizeButton.clicked.connect(self.toggle_fullscreen)
 
-        # Close button
+        self.opacity_button = QPushButton("⛶", self)
+        self.opacity_button.setObjectName("opacityButton")
+        self.opacity_button.setFixedSize(1, 1)
+        self.opacity_button.move(60, 0)
+        self.opacity_button.clicked.connect(self.toggle_opacity_and_always_on_top)
 
-        # Create a vertical layout for the buttons
-        self.button_layout = QVBoxLayout()
+
+        # Create a container widget for the buttons
+        button_container = QWidget()
+        self.button_layout = QVBoxLayout(button_container)
+
         # Add the '+' button to the left side
         self.button_add = QPushButton("+", self)
         self.button_add.setObjectName("plusButton")
         self.button_add.clicked.connect(self.open_add_view_dialog)
         self.button_add.setFixedSize(40, 40)
-        self.button_layout.setContentsMargins(0, 20, 0, 0)
         self.button_layout.addWidget(self.button_add)
-
-        self.update_control_buttons_position()
 
         # Add stretch to push buttons to the top-left corner
         self.button_layout.addStretch()
+        # Create a QScrollArea and set the button container as its widget
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)  # Allow the widget to resize
+        scroll_area.setWidget(button_container)  # Set the button container as the scrollable widget
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # Always show the vertical scrollbar
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  # Disable horizontal scrollbar
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  # Hide vertical scrollbar
+        scroll_area.setFixedWidth(70)
 
-        # Add the button layout to the main layout
-        main_layout.addLayout(self.button_layout)
+        # Add the scroll area to the main layout
+        main_layout.addWidget(scroll_area)
 
         # Create a stacked widget to manage multiple views
         self.stacked_widget = QStackedWidget()
@@ -85,18 +95,13 @@ class ChatGPTApp(QMainWindow):
         self.profile.setPersistentStoragePath(storage_path)
         self.profile.setCachePath(cache_path)
         self.profile.setHttpCacheType(QWebEngineProfile.DiskHttpCache)
+        cookie_store = self.profile.cookieStore()
+        cookie_store.setCookieFilter(lambda cookie: True)
 
         self.profile.setHttpUserAgent(
-            "Mozilla/5.0 (Linux; Android 13; SM-G998B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
+            "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0"
         )
 
-        # Add a button in the lower-left corner to toggle opacity and "always on top"
-        self.button_opacity = QPushButton("⛶", self)
-        self.button_opacity.clicked.connect(self.toggle_opacity_and_always_on_top)
-        self.button_opacity.setFixedSize(40, 40)  # Set a fixed size for the button
-
-        # Position the button in the lower-left corner with a margin
-        self.update_button_position()
 
         # Track the current state of opacity and "always on top"
         self.is_transparent = False
@@ -104,18 +109,6 @@ class ChatGPTApp(QMainWindow):
 
         # Load saved views from the cache
         self.load_views()
-
-        # Set up the system tray icon
-        self.tray_icon = QSystemTrayIcon(QIcon("icons/appIcon.ico"), self)
-        tray_menu = QMenu(self)
-        restore_action = QAction("Restore", self)
-        restore_action.triggered.connect(self.show)
-        tray_menu.addAction(restore_action)
-        quit_action = QAction("Quit", self)
-        quit_action.triggered.connect(QApplication.instance().quit)
-        tray_menu.addAction(quit_action)
-        self.tray_icon.setContextMenu(tray_menu)
-        self.tray_icon.show()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -140,18 +133,15 @@ class ChatGPTApp(QMainWindow):
         else:
             self.showFullScreen()
 
+    def show_minimized(self):
+        self.showMinimized()
 
-
-    def closeEvent(self, event):
-        """Override closeEvent to minimize to tray instead of closing."""
-        event.ignore()
-        self.hide()
-        self.tray_icon.showMessage(
-            "Firefly",
-            "The application is still running. Click the tray icon to restore.",
-            QSystemTrayIcon.Information,
-            2000
-        )
+    def changeEvent(self, event):
+        """Override changeEvent to ensure the window title remains empty."""
+        if event.type() == QEvent.WindowStateChange:
+            # Force the window title to remain empty
+            self.setWindowTitle("")
+        super().changeEvent(event)
 
     def create_web_view(self, url):
         web_view = QWebEngineView()
@@ -194,7 +184,10 @@ class ChatGPTApp(QMainWindow):
         reload_action.triggered.connect(web_view.reload)
         context_menu.addAction(reload_action)
 
-        # Show the context menu
+        settings = context_menu.addAction("Settings")
+        settings.triggered.connect(self.open_settings)
+
+        # Show the context menu near the mouse click position
         context_menu.exec_(web_view.mapToGlobal(pos))
 
     def open_in_external_browser(self, url):
@@ -244,7 +237,13 @@ class ChatGPTApp(QMainWindow):
         context_menu = QMenu(self)
         delete_action = context_menu.addAction("Delete")
         delete_action.triggered.connect(lambda: self.delete_view(button, view))
+        settings = context_menu.addAction("Settings")
+        settings.triggered.connect(self.open_settings)
         context_menu.exec_(button.mapToGlobal(pos))
+
+    def open_settings(self):
+        settings = SettingsDialog(self)
+        settings.exec()
 
     def delete_view(self, button, view):
         """Delete a view and its corresponding button."""
@@ -282,20 +281,10 @@ class ChatGPTApp(QMainWindow):
         # Show the window again to apply the changes
         self.show()
 
-    def update_button_position(self):
-        """Update the position of the opacity button to keep it in the lower-left corner."""
-        margin = 10  # Margin from the edges
-        button_width = self.button_opacity.width()
-        button_height = self.button_opacity.height()
-        x = margin  # X position (left)
-        y = self.height() - button_height - margin  # Y position (bottom)
-        self.button_opacity.move(x, y)
-
     def resizeEvent(self, event):
         """Override resizeEvent to keep the opacity button in the lower-left corner."""
         super().resizeEvent(event)
-        self.update_button_position()
-        self.update_control_buttons_position()
+
 
     def save_views(self):
         """Save the current views to a JSON file."""
@@ -326,17 +315,3 @@ class ChatGPTApp(QMainWindow):
                 views = json.load(f)
                 for view_data in views:
                     self.add_new_view(view_data["name"], view_data["url"], view_data["icon_path"])
-
-    def closeEvent(self, event):
-        """Override closeEvent to save views before closing."""
-        self.save_views()
-        super().closeEvent(event)
-
-    def update_control_buttons_position(self):
-        """Update the position of the control buttons to keep them in the top-left corner."""
-        margin = 7  # Margin from the edges
-        button_width = self.minimize_button.width()
-        x = margin  # X position (left)
-        y = margin  # Y position (top)
-        self.minimize_button.move(x, y)
-        self.fullscreen_button.move(x + button_width + margin, y)

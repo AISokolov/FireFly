@@ -8,15 +8,24 @@ QWidget {
     font-size: 14px;
     border-radius: 15px;  /* Rounded corners */
 }
+
+QMainWindow{
+    background-color: rgba(30, 30, 30, 200);
+    color: #D8DEE9; /* Light text color */
+    font-family: "Segoe UI";
+    font-size: 14px;
+    border-radius: 15px;  /* Rounded corners */
+}
 /* Button styles */
 QPushButton {
     background-color: #4C566A; /* Dark gray background */
     color: #D8DEE9; /* Light text color */
     border: 1px solid #434C5E; /* Slightly darker border */
     border-radius: 5px; /* Rounded corners */
-    padding: 5px;
     min-width: 40px;
     min-height: 40px;
+    padding: 5px;
+    margin-bottom: 3px;
 }
 
 
@@ -38,18 +47,28 @@ QLineEdit {
 }
 
 QLineEdit:hover{
-    background-color: #33475e; /* Light blue background on hover for input fields */
+    background-color: rgba(0, 0, 0, 200);
     border: 1px solid #81A1C1; /* Light blue border on hover for input fields */
 }
-QMenu{
-    background-color: #465a7c; /* Dark gray background for input fields */
-    color: #D8DEE9; /* Light text color for input fields */
-    border: 1px solid #434C5E; /* Slightly darker border for input fields */
-    border-radius: 3px; /* Rounded corners for input fields */
-    padding: 5px;
+
+QMenu::item {
+    background-color: transparent;
+    padding: 5px 10px;
 }
 
-#closeButton, #minimizeButton, #maximizeButton {
+QMenu::item:selected {
+    background-color: rgba(255, 255, 255, 50);
+}
+QAction{
+    background-color: rgba(0, 0, 0, 200);
+    color: #D8DEE9;
+    font-family: "Segoe UI";
+    font-size: 14px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 30);
+    padding: 5px;
+}
+#opacityButton, #minimizeButton, #maximizeButton, #closeButton {
     background-color: rgba(50, 50, 50, 200);
     border-radius: 10px;
     color: white;
@@ -58,14 +77,17 @@ QMenu{
     padding: 2px;  /* Reduce padding */
     min-width: 20px;  /* Smaller width */
     min-height: 20px;  /* Smaller height */
+}
 
+#closeButton {
+    background-color: rgba(255, 0, 0, 200);  /* Red background for close button */
 }
 
 #closeButton:hover {
     background-color: rgba(255, 0, 0, 200);  /* Red background on hover for close button */
 }
 
-#minimizeButton:hover, #maximizeButton:hover {
+#minimizeButton:hover, #maximizeButton:hover, #opacityButton:hover {
     background-color: rgba(70, 70, 70, 200);  /* Slightly lighter on hover */
 }
 
@@ -85,6 +107,7 @@ QStackedWidget::item:selected{
     padding: 5px;
     min-width: 40px;
     min-height: 40px;
+    margin-top: 3px;
 }
 
 #plusButton:hover{
@@ -96,3 +119,44 @@ QStackedWidget::item:selected{
     min-width: 40px;
     min-height: 40px;}
 
+QMainWindow, QDialog {
+    background-color: rgba(0, 0, 0, 200);
+    color: #D8DEE9; /* Light text color */
+    font-family: "Segoe UI";
+    font-size: 14px;
+    border-radius: 15px;  /* Rounded corners */
+}
+
+QSlider {
+    background-color: #4C566A; /* Dark gray background */
+    border: 1px solid #434C5E; /* Slightly darker border */
+    border-radius: 5px; /* Rounded corners */
+    height: 10px; /* Height of the slider */
+}
+
+QSlider::groove:horizontal {
+    border: 1px solid #434C5E;
+    height: 10px;
+    background: #4C566A;
+    border-radius: 5px;
+}
+
+QSlider::handle:horizontal {
+    background: #81A1C1; /* Light blue handle */
+    border: 1px solid #5E81AC;
+    width: 20px;
+    height: 20px;
+    margin: -5px 0; /* Center the handle */
+    border-radius: 10px; /* Rounded handle */
+}
+
+QSlider::handle:horizontal:hover {
+    background: #5E81AC; /* Darker blue on hover */
+}
+QScrollArea {
+    background: transparent;
+    border: none;
+}
+QScrollArea > QWidget > QWidget {
+    background: transparent;
+}

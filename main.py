@@ -2,8 +2,10 @@ import sys
 import os
 
 from PySide6 import QtGui
+from PySide6.QtCore import QEvent
+from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QApplication
-from view.main_window import ChatGPTApp
+from view.main_window import FireFlyApp
 from util.stylesheet import load_stylesheet
 
 # Set up a persistent storage path for the profile
@@ -32,9 +34,11 @@ def resource_path(relative_path):
         base_path = os.path.abspath(".")
     return os.path.join(base_path, relative_path)
 
+
 if __name__ == "__main__":
     # Create the Qt application
     app = QApplication(sys.argv)
+    app.setApplicationName("FireFly")
 
     # Load and apply the stylesheet
     stylesheet_path = resource_path("styles/style.qss")
@@ -47,7 +51,7 @@ if __name__ == "__main__":
     app.setWindowIcon(QtGui.QIcon(os.path.join(basedir, 'icons/appIcon.ico')))
 
     # Create and show the main window
-    window = ChatGPTApp(storage_path, cache_path)
+    window = FireFlyApp(storage_path, cache_path)
     window.show()
 
     # Run the application
