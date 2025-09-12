@@ -22,6 +22,8 @@ FireFlyApp uses cookies to save the application's state. Your settings and open 
 
 # Usage
 
+Below are some screenshots demonstrating the main features and interface of FireFlyApp.
+
 ## Main Window
  <img src="screenshots/main_win.png" width="300"></img>
  
