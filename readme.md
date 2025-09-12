@@ -1,50 +1,35 @@
-# FireFlyApp
+# About the Project
 
-This is a simple PySide6 application that allows you to manage multiple web views with a custom UI.
+FireFlyApp was created based on PySide6 for users who have only one screen on their laptop. I often need to read instructions or reference materials without switching between windows using Alt+Tab. This application allows you to place web widgets on top of all windows, adjust their opacity, and quickly access the information you need without distracting from your main work.
 
-## Features
+# Features
 
 - Add and remove web views
 - Customizable view icons
 - Frameless window with rounded corners
 - Opacity and "always on top" toggle
 
-## Requirements
+## State Persistence
+
+FireFlyApp uses cookies to save the application's state. Your settings and open pages are preserved, so after closing or restarting your PC, the app will start in the same state as you left it.
+
+# Requirements
 
 - Python 3.6+
 - PySide6
 - PyInstaller
+- You can install the required packages using the provided `requirements.txt` file.
 
-## Installation
+# Usage
 
-1. Clone the repository:
-    ```sh
-    git clone https://github.com/AISokolov/FireFlyApp.git
-    cd FireFlyApp
-    ```
+## Main Window
+ <img src="screenshots/main_win.png" width="300"></img>
+ 
+## Opacity Setting
+ <img src="screenshots/opacity_setting.png" width="300"></img>
 
-2. Install the required packages:
-    ```sh
-    pip install -r requirements.txt
-    ```
+## Opacity Button
+ <img src="screenshots/opacity_button.png" width="300"></img>
 
-## Usage
-
-Run the application:
-```sh
-python main.py
-```
-
-## Packaging
-
-To package the application into a single executable file using PyInstaller, run the following command:
-```sh
-pyinstaller --onefile --windowed --icon=icons/appIcon.ico --add-data "styles/style.qss;styles" --add-data "icons/appIcon.ico;icons" main.py
-```
-
-This will create a single executable file in the `dist` directory.
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-```
+## Adding a New Page
+ <img src="screenshots/adding_new_window.png" width="300"></img>

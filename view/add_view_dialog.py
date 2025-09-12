@@ -56,7 +56,7 @@ class AddViewDialog(QDialog):  # Change QMainWindow to QDialog
         self.icon_path = ""
 
     def choose_icon(self):
-        self.icon_path, _ = QFileDialog.getOpenFileName(self, "Choose Icon", "", "Images (*.png *.xpm *.jpg *.ico)")
+        self.icon_path, _ = QFileDialog.getOpenFileName(self, "Choose Icon", "icons", "Images (*.png *.xpm *.jpg *.ico)")
 
     def get_data(self):
         return self.name_input.text(), self.url_input.text(), self.icon_path
