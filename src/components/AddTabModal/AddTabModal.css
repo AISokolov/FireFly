@@ -1,0 +1,113 @@
+.tab-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.add-tab-modal {
+    width: 440px;
+    max-width: calc(100vw - 32px);
+    background: #232323;
+    color: white;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.modal-title {
+    margin: 0 0 18px;
+    font-size: 24px;
+}
+
+.add-tab-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modal-label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.modal-input {
+    height: 42px;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    padding: 0 12px;
+    background: #2f2f2f;
+    color: white;
+}
+
+.modal-input::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.icon-picker {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.icon-option {
+    width: 52px;
+    height: 52px;
+    border: none;
+    border-radius: 12px;
+    background: #2f2f2f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.icon-option.selected {
+    outline: 2px solid #39a9c7;
+}
+
+.icon-option img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.modal-btn {
+    min-width: 100px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font: inherit;
+}
+
+.modal-btn.secondary {
+    background: #353535;
+    color: white;
+}
+
+.modal-btn.primary {
+    background: #39a9c7;
+    color: white;
+}

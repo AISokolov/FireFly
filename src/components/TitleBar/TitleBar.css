@@ -1,0 +1,63 @@
+.titlebar {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    background: rgba(12, 12, 12, 0.5);
+    user-select: none;
+}
+
+.titlebar-left,
+.titlebar-center,
+.titlebar-right {
+    display: flex;
+    align-items: center;
+}
+
+.titlebar-center {
+    font-size: 18px;
+    font-weight: 500;
+    opacity: 0.95;
+}
+
+.traffic-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.win-btn {
+    width: 12px;
+    height: 12px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.win-btn.close {
+    background: #ff5f57;
+}
+
+.win-btn.min {
+    background: #febc2e;
+}
+
+.win-btn.max {
+    background: #28c840;
+}
+
+.icon-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    opacity: 1;
+}
