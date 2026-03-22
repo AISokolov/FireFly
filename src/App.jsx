@@ -2,22 +2,23 @@ import "./App.css";
 import { useState } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
-// Component imports
 import Sidebar from "./components/Sidebar/Sidebar";
 import AddTabModal from "./components/AddTabModal/AddTabModal";
 import TitleBar from "./components/TitleBar/TitleBar";
+import WebviewHost from "./components/WebViewHost/WebViewHost";
+import {
+  hideAllWebviews,
+  showOnlyTabWebview,
+  closeTabWebview,
+} from "./components/WebViewHost/webviewManager";
 
 const appWindow = getCurrentWindow();
 
 function App() {
-  //list of all open tabs
   const [tabs, setTabs] = useState([]);
-  //id of the currently active tab
   const [activeTabId, setActiveTabId] = useState(null);
-  //whether the add tab modal 
-  // (A modal window is a user interface element that appears on top of the main application content) is open
   const [isAddTabOpen, setIsAddTabOpen] = useState(false);
-  // fetch the active tab object based on the activeTabId.
+
   const activeTab = tabs.find((tab) => tab.id === activeTabId) || null;
 
   const minimize = async () => {
@@ -32,8 +33,21 @@ function App() {
     await appWindow.close();
   };
 
-  const handleAddTab = () => {
+  const handleOpenAddTabModal = async () => {
+    await hideAllWebviews();
     setIsAddTabOpen(true);
+  };
+
+  const handleCloseModal = async () => {
+    setIsAddTabOpen(false);
+
+    if (activeTab) {
+      const host = document.querySelector(".content");
+      if (host) {
+        const rect = host.getBoundingClientRect();
+        await showOnlyTabWebview(activeTab.id, rect);
+      }
+    }
   };
 
   const handleSelectTab = (id) => {
@@ -53,6 +67,20 @@ function App() {
     setIsAddTabOpen(false);
   };
 
+  const handleCloseTab = async (tabId) => {
+    await closeTabWebview(tabId);
+
+    setTabs((prevTabs) => {
+      const updatedTabs = prevTabs.filter((tab) => tab.id !== tabId);
+
+      if (activeTabId === tabId) {
+        setActiveTabId(updatedTabs.length ? updatedTabs[0].id : null);
+      }
+
+      return updatedTabs;
+    });
+  };
+
   return (
     <div className="app">
       <TitleBar
@@ -66,18 +94,18 @@ function App() {
         <Sidebar
           tabs={tabs}
           activeTabId={activeTabId}
-          onAddTab={handleAddTab}
+          onAddTab={handleOpenAddTabModal}
           onSelectTab={handleSelectTab}
+          onCloseTab={handleCloseTab}
         />
 
         <main className="content">
-          <h1>
-            {activeTabId ? `Active tab: ${activeTabId}` : "No tabs yet"}
-          </h1>
+          <WebviewHost activeTab={activeTab} />
         </main>
+
         <AddTabModal
           isOpen={isAddTabOpen}
-          onClose={() => setIsAddTabOpen(false)}
+          onClose={handleCloseModal}
           onCreateTab={handleCreateTab}
         />
       </div>
