@@ -1,92 +1,53 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Webview } from "@tauri-apps/api/webview";
+import { getAllWebviews, Webview } from "@tauri-apps/api/webview";
+import { createWebviewController } from "./webviewController.js";
+import { invoke } from "@tauri-apps/api/core";
 
-const webviews = new Map();
-
-function normalizeUrl(url) {
-    if (!url) return "";
-    const trimmed = url.trim();
-    if (/^https?:\/\//i.test(trimmed)) return trimmed;
-    return `https://${trimmed}`;
+export function createTabWebviewOptions(tab, rect) {
+    return {
+        url: tab.url,
+        x: -10000,
+        y: -10000,
+        width: Math.max(1, Math.round(rect.width)),
+        height: Math.max(1, Math.round(rect.height)),
+        focus: false,
+        zoomHotkeysEnabled: true,
+    };
 }
 
-export async function ensureTabWebview(tab, rect) {
-    const label = `tab_${tab.id}`;
-    let webview = webviews.get(label);
-
-    if (!webview) {
-        const appWindow = getCurrentWindow();
-
-        webview = new Webview(appWindow, label, {
-            url: normalizeUrl(tab.url),
-            x: Math.round(rect.x),
-            y: Math.round(rect.y),
-            width: Math.max(100, Math.round(rect.width)),
-            height: Math.max(100, Math.round(rect.height)),
+export const webviewManager = createWebviewController({
+    async existing() {
+        return (await getAllWebviews())
+            .filter((view) => view.label.startsWith("tab_"))
+            .map((view) => [view.label.slice(4), view]);
+    },
+    create(tab, rect) {
+        return new Promise((resolve, reject) => {
+            const view = new Webview(
+                getCurrentWindow(),
+                `tab_${tab.id}`,
+                createTabWebviewOptions(tab, rect),
+            );
+            const listeners = [];
+            let settled = false;
+            const finish = (error) => {
+                if (settled) return;
+                settled = true;
+                listeners.forEach((unlisten) => unlisten());
+                if (error) reject(error);
+                else resolve(view);
+            };
+            const register = (event, callback) => {
+                view.once(event, callback).then((unlisten) => {
+                    if (settled) unlisten();
+                    else listeners.push(unlisten);
+                }, finish);
+            };
+            register("tauri://created", () => finish());
+            register("tauri://error", (event) => finish(new Error(String(event.payload))));
         });
-
-        webview.once("tauri://error", (error) => {
-            console.error("Webview creation error:", error);
-        });
-
-        webviews.set(label, webview);
-    }
-
-    return webview;
-}
-
-export async function showOnlyTabWebview(tabId, rect) {
-    const labelToShow = `tab_${tabId}`;
-
-    for (const [label, webview] of webviews.entries()) {
-        try {
-            if (label === labelToShow) {
-                if (rect) {
-                    await webview.setPosition({
-                        type: "Logical",
-                        x: Math.round(rect.x),
-                        y: Math.round(rect.y),
-                    });
-
-                    await webview.setSize({
-                        type: "Logical",
-                        width: Math.max(100, Math.round(rect.width)),
-                        height: Math.max(100, Math.round(rect.height)),
-                    });
-                }
-
-                await webview.show();
-                await webview.setFocus();
-            } else {
-                await webview.hide();
-            }
-        } catch (error) {
-            console.error("Webview show/hide error:", error);
-        }
-    }
-}
-
-export async function hideAllWebviews() {
-    for (const [, webview] of webviews.entries()) {
-        try {
-            await webview.hide();
-        } catch (error) {
-            console.error("Failed to hide webview:", error);
-        }
-    }
-}
-
-export async function closeTabWebview(tabId) {
-    const label = `tab_${tabId}`;
-    const webview = webviews.get(label);
-
-    if (!webview) return;
-
-    try {
-        await webview.close();
-    } catch (error) {
-        console.error("Failed to close webview:", error);
-    }
-
-    webviews.delete(label);
-}
+    },
+    navigate(id, url) { return invoke("navigate_tab", { tabId: id, url }); },
+    reload(id) { return invoke("reload_tab", { tabId: id }); },
+    setOpacity(opacity) { return invoke("set_webview_opacity", { opacity }); },
+});

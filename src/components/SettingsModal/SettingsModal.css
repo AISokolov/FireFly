@@ -1,0 +1,6 @@
+.settings-modal { width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 48px); overflow: auto; padding: 20px; border: 1px solid #41495a; border-radius: 18px; background: #232833; color: white; }
+.settings-modal h2 { margin: 0; }.settings-section { margin-top: 18px; padding: 16px; border-radius: 13px; background: #2e3542; }.settings-section h3 { margin: 0 0 7px; }.settings-section p { color: #bbc2cf; line-height: 1.45; }
+.primary-action, .secondary-action, .cache-confirm button { border: 0; border-radius: 9px; padding: 9px 13px; background: #3d8092; color: white; cursor: pointer; }.secondary-action { background: #444e60; }
+.cache-confirm { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px; border-radius: 9px; background: #473b2e; }.cache-confirm span { width: 100%; color: #ffe1b5; }
+.settings-feedback { padding: 8px 10px; border-radius: 8px; background: #252b36; color: #d9edf2 !important; }
+.about-grid { display: grid; grid-template-columns: auto 1fr; gap: 8px 18px; }.about-grid dt { color: #9da7b8; }.about-grid dd { margin: 0; text-align: right; }

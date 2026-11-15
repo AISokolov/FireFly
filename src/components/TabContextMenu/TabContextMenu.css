@@ -1,0 +1,13 @@
+.tab-context-menu {
+    position: fixed;
+    z-index: 1200;
+    width: 164px;
+    padding: 6px;
+    border: 1px solid #465062;
+    border-radius: 10px;
+    background: #252b37;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+}
+.tab-context-menu button { width: 100%; border: 0; border-radius: 7px; padding: 8px 10px; background: transparent; color: #f5f7fb; text-align: left; cursor: pointer; }
+.tab-context-menu button:hover, .tab-context-menu button:focus-visible { background: #374052; outline: none; }
+.tab-context-menu .danger { color: #ff8585; }

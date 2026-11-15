@@ -1,0 +1,56 @@
+.transparency-control {
+    position: relative;
+    height: 28px;
+    display: flex;
+    align-items: center;
+}
+
+.transparency-popover {
+    position: absolute;
+    top: 0;
+    left: 25px;
+    z-index: 1400;
+    height: 30px;
+    width: 430px;
+    padding: 3px 10px;
+    border: 1px solid #3f4859;
+    border-radius: 9px;
+    background: #242a35;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .35);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-5px);
+    transition: opacity .14s ease, transform .14s ease, visibility .14s;
+}
+
+.transparency-control:hover .transparency-popover,
+.transparency-control:focus-within .transparency-popover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+.transparency-popover label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.transparency-popover label>span {
+    display: flex;
+    gap: 4px;
+}
+
+.transparency-popover input[type="range"] {
+    width: 125px;
+    accent-color: #57d4ed;
+}
+
+.top-checkbox input {
+    accent-color: #57d4ed;
+}

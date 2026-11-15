@@ -1,20 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { open } from "@tauri-apps/plugin-dialog";
 import "./AddTabModal.css";
 
 const DEFAULT_ICONS = [
-    "/public/assets/default-icons/discord.png",
-    "/public/assets/default-icons/telegramicon.ico",
-    "/public/assets/default-icons/gmailicon.png",
-    "/public/assets/default-icons/chatgptIcon.png",
-    "/public/assets/default-icons/yandexIcon.png",
-    "/public/assets/default-icons/gmailIcon.png",
+    "/assets/default-icons/Discord.png",
+    "/assets/default-icons/telegramIcon.ico",
+    "/assets/default-icons/whatsappIcon.png",
+    "/assets/default-icons/chatgptIcon.png",
+    "/assets/default-icons/yandexIcon.png",
+    "/assets/default-icons/gmailIcon.png",
 ];
 
-function AddTabModal({ isOpen, onClose, onCreateTab }) {
+function AddTabModal({ isOpen, onClose, onSubmit, mode = "create", initialTab = null }) {
     const [title, setTitle] = useState("");
     const [url, setUrl] = useState("");
     const [icon, setIcon] = useState(DEFAULT_ICONS[0]);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        if (!isOpen) return;
+        setTitle(initialTab?.title ?? "");
+        setUrl(initialTab?.url ?? "");
+        setIcon(initialTab?.icon ?? DEFAULT_ICONS[0]);
+        setError("");
+    }, [isOpen, initialTab]);
 
     if (!isOpen) return null;
 
@@ -43,23 +52,27 @@ function AddTabModal({ isOpen, onClose, onCreateTab }) {
 
         if (!trimmedUrl) return;
 
-        onCreateTab({
+        const saved = onSubmit({
             title: trimmedTitle || "New Tab",
             url: trimmedUrl,
             icon,
         });
 
-        setTitle("");
-        setUrl("");
-        setIcon(DEFAULT_ICONS[0]);
+        if (!saved) {
+            setError("Enter a valid HTTP or HTTPS website address.");
+            return;
+        }
+        setError("");
+
     };
 
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="add-tab-modal" onClick={(e) => e.stopPropagation()}>
-                <h2 className="modal-title">Add tab</h2>
+                <h2 className="modal-title">{mode === "edit" ? "Edit tab" : "Add tab"}</h2>
 
                 <form onSubmit={handleSubmit} className="add-tab-form">
+                    {error && <p role="alert">{error}</p>}
                     <label className="modal-label">
                         Title
                         <input
@@ -114,7 +127,7 @@ function AddTabModal({ isOpen, onClose, onCreateTab }) {
                             Cancel
                         </button>
                         <button type="submit" className="modal-btn primary">
-                            Create
+                            {mode === "edit" ? "Save" : "Create"}
                         </button>
                     </div>
                 </form>

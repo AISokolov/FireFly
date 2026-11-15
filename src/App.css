@@ -103,6 +103,13 @@ input {
   min-height: 0;
 }
 
+.session-error {
+  background: #502c32;
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
 
 .content {
   flex: 1;

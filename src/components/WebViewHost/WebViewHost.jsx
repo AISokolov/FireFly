@@ -1,47 +1,39 @@
-import { useEffect, useRef } from "react";
-import { ensureTabWebview, showOnlyTabWebview } from "./webviewManager";
+import { useLayoutEffect, useRef, useState } from "react";
+import { webviewManager } from "./webviewManager";
 import "./WebViewHost.css";
-function WebviewHost({ activeTab }) {
+
+function WebviewHost({ tabs, activeTabId, hidden }) {
     const hostRef = useRef(null);
+    const [error, setError] = useState("");
+    const [retry, setRetry] = useState(0);
 
-    useEffect(() => {
-        if (!activeTab || !hostRef.current) return;
-
+    useLayoutEffect(() => {
         const host = hostRef.current;
-
-        const syncWebview = async () => {
-            const rect = host.getBoundingClientRect();
-            await ensureTabWebview(activeTab, rect);
-            await showOnlyTabWebview(activeTab.id, rect);
+        let cancelled = false;
+        const sync = () => {
+            webviewManager.sync({ tabs, activeTabId, hidden, rect: host.getBoundingClientRect() })
+                .then(() => { if (!cancelled) setError(""); }, (cause) => {
+                    console.error("Webview synchronization failed:", cause);
+                    if (!cancelled) setError("Could not update the browser tab.");
+                });
         };
-
-        syncWebview();
-
-        const resizeObserver = new ResizeObserver(() => {
-            syncWebview();
-        });
-
-        resizeObserver.observe(host);
-
-        const onWindowResize = () => {
-            syncWebview();
-        };
-
-        window.addEventListener("resize", onWindowResize);
-
+        sync();
+        const observer = new ResizeObserver(sync);
+        observer.observe(host);
+        window.addEventListener("resize", sync);
         return () => {
-            resizeObserver.disconnect();
-            window.removeEventListener("resize", onWindowResize);
+            cancelled = true;
+            observer.disconnect();
+            window.removeEventListener("resize", sync);
         };
-    }, [activeTab]);
-
-    if (!activeTab) {
-        return <h1>No tabs yet</h1>;
-    }
+    }, [tabs, activeTabId, hidden, retry]);
 
     return (
         <div className="webview-wrapper">
-            <div ref={hostRef} className="webview-host" />
+            <div ref={hostRef} className="webview-host">
+                {!tabs.length && <h1>No tabs yet</h1>}
+                {error && <div role="alert">{error} <button onClick={() => setRetry((value) => value + 1)}>Retry</button></div>}
+            </div>
         </div>
     );
 }

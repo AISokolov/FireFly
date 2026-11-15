@@ -1,0 +1,10 @@
+.trash-modal { width: min(720px, calc(100vw - 32px)); max-height: min(620px, calc(100vh - 48px)); display: flex; flex-direction: column; gap: 14px; padding: 20px; border: 1px solid #41495a; border-radius: 18px; background: #232833; color: white; }
+.panel-heading, .panel-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.panel-heading h2, .panel-heading p { margin: 0; } .panel-heading p { margin-top: 4px; color: #aeb6c5; font-size: 13px; }
+.panel-close { border: 0; background: transparent; color: white; font-size: 26px; cursor: pointer; }
+.trash-list { min-height: 140px; overflow: auto; display: flex; flex-direction: column; gap: 8px; }
+.trash-item { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto auto; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; background: #303744; }
+.trash-item img, .fallback-icon { width: 30px; height: 30px; object-fit: contain; display: grid; place-items: center; border-radius: 8px; background: #41495a; }
+.trash-details { min-width: 0; display: flex; flex-direction: column; gap: 2px; } .trash-details span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #bdc4d0; font-size: 12px; } .trash-details time { color: #8f98aa; font-size: 11px; }
+.trash-item button, .panel-actions button { border: 0; border-radius: 8px; padding: 8px 11px; background: #3d8092; color: white; cursor: pointer; } .trash-item .danger, .panel-actions .danger { background: #59323a; color: #ffb2b2; } button:disabled { opacity: .45; cursor: default; }
+.empty-state { margin: auto; color: #9ca5b6; }

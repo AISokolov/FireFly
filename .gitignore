@@ -12,11 +12,25 @@ dist
 dist-ssr
 *.local
 
+# Local environment files (keep a shareable template if added)
+.env
+.env.*
+!.env.example
+
+# Test coverage and temporary reports
+coverage
+.nyc_output
+
+# Accidental command-output artifact
+/src-tauri/2
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
+Desktop.ini
 *.suo
 *.ntvs*
 *.njsproj

@@ -1,7 +1,7 @@
 import "./AddTabButton.css";
 function AddTabButton({ onAddTab }) {
     return (
-        <button className="sidebar-btn active" onClick={onAddTab}>
+        <button type="button" className="sidebar-btn" onClick={onAddTab} aria-label="Add tab" title="Add tab">
             +
         </button>
     );
