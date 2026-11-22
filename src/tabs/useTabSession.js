@@ -76,10 +76,10 @@ export default function useTabSession() {
         await storage.save(current.current);
     }, [refreshUrls]);
 
-    const addTab = (data) => {
+    const addTab = (data, folderId = null) => {
         const url = normalizeUrl(data.url);
         if (!url) return false;
-        update({ type: "add", tab: { ...data, url, id: crypto.randomUUID() } });
+        update({ type: "add", tab: { ...data, url, id: crypto.randomUUID() }, folderId });
         return true;
     };
 
@@ -94,7 +94,7 @@ export default function useTabSession() {
         const source = current.current.tabs.find((tab) => tab.id === id);
         if (!source) return;
         const index = current.current.tabs.findIndex((tab) => tab.id === id) + 1;
-        update({ type: "add", tab: { ...source, id: crypto.randomUUID(), title: `${source.title} copy` }, index });
+        update({ type: "add", tab: { ...source, id: crypto.randomUUID(), title: `${source.title} copy` }, index, afterId: id });
     };
 
     return { session, ready, error, reportError, addTab, editTab, duplicateTab, update, flush };

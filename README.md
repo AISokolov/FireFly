@@ -1,61 +1,80 @@
-# FireFly
+# FireFly (working title)
 
-FireFly is a React + Tauri v2 desktop browser overlay for Windows.
+A Windows desktop browser-overlay prototype for exploring how semi-transparent browser content can support or interfere with work on a single laptop display. The project is being developed in connection with a bachelor’s thesis; the final application name and research design are still to be decided.
 
-## Development and checks
+> **Working thesis topic**
+>
+> **When Does Interface Transparency Help? Task Performance and Visual Interference in Single-Screen Laptop Multitasking**
+>
+> **Central question:** Under which task conditions does a semi-transparent browser overlay support or hinder performance and usability during computer-based work on a single laptop display?
 
-```powershell
-npm install
-npm run tauri dev
-npm test
-npm run build
-cargo check --manifest-path src-tauri/Cargo.toml
-cargo test --manifest-path src-tauri/Cargo.toml
-npm run tauri -- build --debug --no-bundle -- --offline
-```
+## Project overview
 
-The frontend uses JavaScript/JSX, so there is no separate TypeScript check. The installed native stack is Tauri 2.10.3, Wry 0.54.4, and `webview2-com` 0.38.2.
+FireFly combines an application sidebar and controls with embedded browser tabs in one desktop window. The current prototype supports tab and folder organization, session persistence, recently closed tabs, browser-content opacity, and an always-on-top control. On Windows, the browser pages are native WebView2 child views hosted by Tauri. Opacity is applied to the browser document view, while the app controls remain opaque.
 
-## Tabs and persistence
+The prototype provides a basis for investigating transparency and single-screen multitasking. It does not yet implement a research protocol, collect study data, or establish that transparency improves performance. Those outcomes depend on the tasks, conditions, measures, and study design selected for the thesis.
 
-The sidebar keeps Add Tab fixed at the top and Recently Closed fixed at the bottom. Only the tab list scrolls. Selecting a tab scrolls it into view, and right-clicking opens Edit, Reload, Duplicate, and Close actions. Create and Edit share the same validated form.
+## Technologies
 
-Session format v2 stores ordered tabs, the active ID, up to 50 recently closed tabs, and always-on-top preferences. It migrates the previous v1 format. Closing a tab records its configuration, close time, and original index; restoring recreates its webview lazily and inserts it at that index when possible. Normal application shutdown does not close tabs individually and therefore does not add them to Trash.
+| Area | Technologies and tools | Role in the project |
+| --- | --- | --- |
+| Desktop application | Tauri 2, Rust stable, Cargo | Desktop shell, native commands, window behavior, packaging, and native webview management |
+| Frontend | React 19, JavaScript (ES modules), JSX, HTML, CSS | Application interface, sidebar, tabs, dialogs, settings, and user interactions |
+| Frontend build and development | Vite 7, @vitejs/plugin-react, Tauri CLI | Local development server, frontend bundling, and Tauri development/build commands |
+| Embedded browser | WebView2 on Windows, Tauri/Wry | Hosts web pages in native child webviews |
+| Windows integration | webview2-com, windows, windows-core Rust crates | WebView2 controller access and Windows window APIs, including browser-content opacity |
+| Data and serialization | serde, serde_json, JSON session file | Validate, serialize, and persist tabs, layout, recently closed tabs, and preferences |
+| Tauri plugins | tauri-plugin-dialog, tauri-plugin-opener | Native dialogs and opening supported links |
+| Testing | Node.js built-in test runner (node:test), Rust test tooling | Frontend/session/controller regression tests and Rust tests |
 
-Session data is written to `tab-session.json` under Tauri's app-data directory (`%APPDATA%\com.alex.firefly` on Windows). It contains URLs, titles, icon references, IDs, and preferences. It does not copy cookies, credentials, page contents, form data, or navigation history. Embedded URL credentials are removed. A one-second URL poll supplements native page-load events for SPA and hash navigation.
+Dependency versions and scripts are defined in package.json and src-tauri/Cargo.toml. The frontend is JavaScript/JSX; TypeScript is not configured.
 
-## Windows-native browser behavior
+## Current features
 
-Tauri's child webviews are native WebView2 HWNDs, so React styles on the FireFly UI cannot clip or fade them. On Windows, FireFly applies alpha only to WebView2's inner document HWND. The Wry container and FireFly's own UI remain normal, so the title bar and sidebar stay visible while the browser content fades.
+- Browser tabs with add, edit, duplicate, reload, and close actions.
+- Folders for organizing tabs, with rename, color, and delete controls.
+- Drag-and-drop layout customization for tabs and folders.
+- Session persistence, including tab URLs, active tab, layout, preferences, and up to 50 recently closed tabs.
+- Restore recently closed tabs individually or restore all.
+- Adjustable browser-page opacity; the FireFly interface remains opaque.
+- Persistent always-on-top preference.
+- Windows tray behavior: closing the window hides the app, while the tray menu can restore or quit it.
+- Cache clearing targeted at disk and cache storage, preserving cookies and login state.
 
-The title-bar control provides live 0–100% browser opacity and persistent always-on-top behavior. Opacity is stored in session preferences and reapplied by the Rust page-load hook after navigation or reload. FireFly's title bar, sidebar, menus, and settings remain fully opaque because only each remote page document is faded.
+## Thesis context
 
-Cache clearing uses WebView2's `ClearBrowsingData` with only `DISK_CACHE | CACHE_STORAGE`. The broader Wry/Tauri convenience API was deliberately not used because it clears all browsing data, including cookies. Saved tabs, preferences, Trash, cookies, login state, browsing history, autofill, and passwords are not targeted. Settings reads application name/version and Tauri version dynamically and reports Rust's current OS/architecture. Set `VITE_REPOSITORY_URL` at build time to show the repository button.
+The research focus is whether and when transparency changes the balance between seeing underlying material and keeping the overlaid browser content legible. The application currently supplies an adjustable opacity control and a single-screen overlay arrangement that may support prototype-based evaluation.
 
-## Manual verification
+Possible study conditions and measures should be specified as part of the thesis methodology. For example, a study could compare opaque and semi-transparent presentation across task types and measure task completion, errors, completion time, perceived workload, and usability. These are suggestions for future study design, not existing app capabilities or finalized thesis commitments.
 
-1. Run `npm run tauri dev`, create 20 or more tabs, resize the window, and verify that only the middle tab list scrolls while Add and Trash remain visible.
-2. Right-click active and inactive tabs. Edit names/icons/URLs, reload a loaded tab, duplicate tabs, and close without unintended activation.
-3. Close first, middle, active, and last tabs. Verify Trash metadata, individual restore/delete, Restore All ordering, Empty Trash confirmation, the 50-item limit, and persistence after restart.
-4. Open Settings and verify dynamic metadata. Clear cache after its confirmation, then confirm that sessions and website login cookies remain while cached resources reload.
-5. Click ⟳ and confirm browser content changes to 60% while FireFly controls stay opaque and the window remains above ordinary windows. Click it again and confirm opacity returns to 100% and always-on-top turns off. Exercise 0%, 60%, and 100%, reload, navigate, resize, and restart.
-6. Confirm normal browser scrolling, clicking, text selection, page input, and resizing. Hold Ctrl while scrolling over the webpage and verify that WebView2 zooms the page in and out without scaling FireFly's own controls.
-7. Test URL redirects, SPA/hash navigation, malformed URLs, rapid create/select/close operations, Alt+F4 persistence, title-bar dragging, minimize/maximize, and failed page loads.
+## Requirements
 
-## Main implementation files
+- Windows 10/11 with Microsoft Edge WebView2 Runtime.
+- Node.js and npm.
+- Rust stable toolchain and Cargo.
+- Tauri 2 development prerequisites for Windows, including the Microsoft C++ Build Tools and WebView2 Runtime.
 
-- `src/tabs/{session.js,useTabSession.js}`: session v2 validation, migration, tab/Trash transitions, ordered persistence, and URL tracking.
-- `src/App.jsx`: coordinated overlay, tab, Trash, transparency, always-on-top, and shutdown state.
-- `src/components/Sidebar`, `TabButton`, `TabContextMenu`, `AddTabModal`, `TrashModal`: scrollable tab management and shared create/edit UI.
-- `src/components/SettingsModal`, `TransparencyControl`, `TitleBar`: cache confirmation, application information, and persistent native controls.
-- `src/components/WebViewHost/{WebViewHost.jsx,webviewManager.js,webviewController.js}`: serialized native lifecycle, navigation/reload, reuse, and race prevention.
-- `src-tauri/src/{native.rs,session.rs,lib.rs}`: WebView2 cache operations, native navigation/reload, metadata, session files, and command registration.
-- `tests/*.test.js`: session migration/Trash, close-button behavior, and native-view controller regression coverage.
+The current browser-opacity implementation uses Windows WebView2 APIs. Opacity is not currently implemented on other operating systems.
+
+## Data and privacy
+
+The app stores its session in tab-session.json in the Tauri application data directory (on Windows, %APPDATA%\com.alex.firefly). Session data includes browser URLs, titles, icon references, IDs, layout, and preferences. Embedded URL credentials are removed before saving. The session file does not store cookies, page contents, form data, or browsing history. WebView2 maintains website cookies and login state separately.
 
 ## Current limitations
 
-- Recently closed entries restore tab configuration and URL only; unsaved page state and back/forward history are outside the session format.
-- Background tabs remain lazy and do not have a native webview until selected. Reload on a never-loaded background tab is therefore a safe no-op.
-- Browser opacity uses the Windows WebView2 document child window and is not currently available on other platforms.
-- Reliable native rounded clipping remains unavailable with the current child WebView2 architecture; the unstable layered-child approach stays removed.
-- Custom local icon display still depends on the existing Tauri asset-loading configuration.
+- Browser-page opacity is currently implemented only for Windows WebView2.
+- Recently closed tabs restore their configuration and URL, not unsaved page state or back/forward history.
+- Background tabs are lazy-loaded; a tab that has not created a webview cannot be reloaded yet.
+- Rounded clipping of the native browser views is not currently supported reliably.
+- The application name is provisional, and study conditions, tasks, and measures have not been finalized.
+
+## Repository layout
+
+- src/ — React interface and tab/session state logic.
+- src/components/WebViewHost/ — native webview lifecycle and frontend integration.
+- src-tauri/src/ — Rust commands, session persistence, Windows behavior, and tray integration.
+- tests/ — JavaScript regression tests.
+
+## License
+
+No license has been specified yet.

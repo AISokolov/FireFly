@@ -11,3 +11,5 @@
 .tab-context-menu button { width: 100%; border: 0; border-radius: 7px; padding: 8px 10px; background: transparent; color: #f5f7fb; text-align: left; cursor: pointer; }
 .tab-context-menu button:hover, .tab-context-menu button:focus-visible { background: #374052; outline: none; }
 .tab-context-menu .danger { color: #ff8585; }
+.tab-context-menu { width: 190px; max-width: calc(100vw - 8px); max-height: calc(100vh - 8px); overflow-y: auto; }
+.tab-context-menu .customize-action { border-top: 1px solid #514160; margin-top: 4px; color: #e4ccff; }

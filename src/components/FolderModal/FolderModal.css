@@ -1,0 +1,11 @@
+.folder-modal { animation: folder-appear 140ms ease-out; }
+.folder-modal .primary { background: #8b5cf6; }
+.folder-modal p { line-height: 1.6; color: #d6d0e2; }
+.folder-colors { display: flex; gap: 12px; border: 0; padding: 0; margin: 0; }
+.folder-colors legend { margin-bottom: 12px; font-size: 14px; }
+.folder-swatch { display: grid; place-items: center; width: 44px; height: 44px; border: 2px solid transparent; border-radius: 12px; color: #171122; cursor: pointer; }
+.folder-swatch.selected { outline: 2px solid #f6c568; outline-offset: 3px; }
+.folder-modal button:focus-visible, .folder-modal input:focus-visible { outline: 2px solid #f6c568; outline-offset: 3px; }
+.folder-modal button:disabled { opacity: .5; cursor: default; }
+@keyframes folder-appear { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .folder-modal { animation: none; } }

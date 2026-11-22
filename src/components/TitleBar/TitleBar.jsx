@@ -16,7 +16,7 @@ function TitleBar({ OnMinimize, OnMaximize, OnClose, title, onSettings, transpar
                 <div className="traffic-buttons">
                     <button className="win-btn min" onClick={OnMinimize} aria-label="Minimize FireFly"></button>
                     <button className="win-btn max" onClick={OnMaximize} aria-label="Maximize FireFly"></button>
-                    <button className="win-btn close" onClick={OnClose} aria-label="Close FireFly"></button>
+                    <button className="win-btn close" onClick={OnClose} aria-label="Hide FireFly to tray" title="Hide FireFly to tray"></button>
                 </div>
             </div>
         </div>

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createSessionStorage, emptySession, normalizeUrl, restoreSession, updateSession } from "../src/tabs/session.js";
 
 const tab = (id) => ({ id, title: id, url: `https://${id}.example/`, icon: "" });
-const session = { ...emptySession(), tabs: [tab("a"), tab("b"), tab("c")], activeTabId: "b" };
+const session = restoreSession({ ...emptySession(), tabs: [tab("a"), tab("b"), tab("c")], activeTabId: "b" });
 
 test("restoration preserves order, IDs and active selection through a JSON round trip", () => {
     assert.deepEqual(restoreSession(JSON.parse(JSON.stringify(session))), session);
@@ -51,7 +51,7 @@ test("closed tabs restore at their original position and trash can be managed", 
 
 test("session v1 migrates and invalid preferences are repaired", () => {
     const migrated = restoreSession({ version: 1, tabs: [tab("a")], activeTabId: "a" });
-    assert.equal(migrated.version, 2);
+    assert.equal(migrated.version, 3);
     assert.deepEqual(migrated.preferences, { webviewOpacity: 100, alwaysOnTop: false });
     const repaired = restoreSession({ ...migrated, preferences: { webviewOpacity: 999, alwaysOnTop: true } });
     assert.deepEqual(repaired.preferences, { webviewOpacity: 100, alwaysOnTop: true });

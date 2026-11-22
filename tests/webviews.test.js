@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createWebviewController } from "../src/components/WebViewHost/webviewController.js";
 import { createTabWebviewOptions } from "../src/components/WebViewHost/webviewManager.js";
+import { restoreSession, updateSession } from "../src/tabs/session.js";
 
 const tabs = [{ id: "a", url: "https://a.example/" }, { id: "b", url: "https://b.example/" }];
 const rect = { x: 56, y: 32, width: 744, height: 568 };
@@ -109,4 +110,19 @@ test("editing a loaded tab navigates the existing webview and reload does not re
     assert.equal(calls.filter(([, operation]) => operation === "create").length, 1);
     assert.ok(calls.some(([id, operation, url]) => id === "a" && operation === "navigate" && url.endsWith("/edited")));
     assert.ok(calls.some(([id, operation]) => id === "a" && operation === "reload"));
+});
+
+test("customizing and moving the active tab through folders keeps its native page alive", async () => {
+    const { manager, calls } = fixture();
+    let state = restoreSession({ version: 2, tabs, activeTabId: "a" });
+    await manager.sync({ ...state, rect, hidden: false });
+    await manager.sync({ ...state, rect, hidden: true });
+    state = updateSession(state, { type: "createFolder", id: "work", name: "Work" });
+    state = updateSession(state, { type: "moveItem", id: "a", folderId: "work" });
+    await manager.sync({ ...state, rect, hidden: true });
+    state = updateSession(state, { type: "deleteFolder", id: "work" });
+    await manager.sync({ ...state, rect, hidden: false });
+    assert.equal(state.activeTabId, "a");
+    assert.equal(calls.filter(([, operation]) => operation === "create").length, 1);
+    assert.equal(calls.some(([, operation]) => ["close", "navigate", "reload"].includes(operation)), false);
 });

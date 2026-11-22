@@ -74,13 +74,55 @@ pub async fn get_tab_urls(
         .into_iter()
         .filter_map(|(label, view)| {
             let id = label.strip_prefix("tab_")?;
-            let url = view.url().ok()?;
+            let mut url = view.url().ok()?;
             if !matches!(url.scheme(), "http" | "https") {
                 return None;
             }
+            let _ = url.set_username("");
+            let _ = url.set_password(None);
             Some((id.to_owned(), url.to_string()))
         })
         .collect())
+}
+
+pub fn persist_live_urls(app: &AppHandle) -> Result<(), String> {
+    // Read native views before acquiring the storage lock: webview queries may marshal
+    // to the UI thread, which could itself be waiting on a pending session write.
+    let urls: HashMap<String, String> = app
+        .webviews()
+        .into_iter()
+        .filter_map(|(label, view)| {
+            let id = label.strip_prefix("tab_")?;
+            let mut url = view.url().ok()?;
+            let _ = url.set_username("");
+            let _ = url.set_password(None);
+            matches!(url.scheme(), "http" | "https").then(|| (id.to_owned(), url.to_string()))
+        })
+        .collect();
+    let storage = app.state::<SessionStorage>();
+    let _guard = storage.0.lock().map_err(|error| error.to_string())?;
+    let path = app
+        .path()
+        .app_data_dir()
+        .map_err(|error| error.to_string())?
+        .join("tab-session.json");
+    let mut session = read_session(&path)?;
+    if let Some(tabs) = session
+        .get_mut("tabs")
+        .and_then(|value| value.as_array_mut())
+    {
+        for tab in tabs {
+            if let Some(url) = tab
+                .get("id")
+                .and_then(|id| id.as_str())
+                .and_then(|id| urls.get(id))
+            {
+                tab["url"] = serde_json::Value::String(url.clone());
+            }
+        }
+        write_session(&path, &session)?;
+    }
+    Ok(())
 }
 
 #[cfg(test)]
