@@ -2,12 +2,6 @@
 
 A Windows desktop browser-overlay prototype for exploring how semi-transparent browser content can support or interfere with work on a single laptop display. The project is being developed in connection with a bachelor’s thesis; the final application name and research design are still to be decided.
 
-> **Working thesis topic**
->
-> **When Does Interface Transparency Help? Task Performance and Visual Interference in Single-Screen Laptop Multitasking**
->
-> **Central question:** Under which task conditions does a semi-transparent browser overlay support or hinder performance and usability during computer-based work on a single laptop display?
-
 ## Project overview
 
 FireFly combines an application sidebar and controls with embedded browser tabs in one desktop window. The current prototype supports tab and folder organization, session persistence, recently closed tabs, browser-content opacity, and an always-on-top control. On Windows, the browser pages are native WebView2 child views hosted by Tauri. Opacity is applied to the browser document view, while the app controls remain opaque.
